@@ -23,7 +23,8 @@ int main(int argc,char *argv[])//argv[0] is file name, argv[1] is the ipaddress 
     IP_address = argv[1];
     printf("IP_ADDRESS is %s\n",IP_address);
     
-    int socket_fd = socket(AF_INET, SOCK_STREAM, 0); //choose AF_INET for ipv4, and sock_stream for TCP, IPPROTO_TCP is choosing the TCP protocol
+    //create a socket
+    int socket_fd = socket(AF_INET, SOCK_STREAM, 0); //choose AF_INET for ipv4, and sock_stream for TCP
     if (socket_fd == -1){ //if socket return the value -1, that means failure and no socket is created
         printf("FAIL: cannot create a socket");
     }
@@ -45,29 +46,27 @@ int main(int argc,char *argv[])//argv[0] is file name, argv[1] is the ipaddress 
         printf("FAIL: cannot connect the socket\n");
     }
     printf("ready to send msg, please type\n");
-    
+    memset(&sendline,0,sizeof(sendline));
     //send
-    fgets(sendline,IP_port,stdin);
+    //while(1){
+        printf("what i send to the server: ");
+    fgets(sendline,MAXLINE,stdin);//get what we type in the command line, the first argument is the buffer for message reading, the second argument is the number of message, the third is the source of this message, which is the command line here.
+        printf("\n");
     if((send(socket_fd,sendline,strlen(sendline),0))<0){//socket_fd is the descriptor of the socket, sendline is the buffer, MAXLINE is the lenth of the buffer, 0 is the flags
         printf("FAIL: error when sending message\n ");
     }
-    
-    close(socket_fd);
-    printf("sent msg, closed the socket\n");
-
-    
-    
-    //recv(int sockfd, void *buf, size_t len, int flags)
-    //sockfd is the discriptor of the socket, buffer is used for receving, len is the length of the buffer
-    //the return value of recv is the number of tuples, -1 means fail
+    memset(&client_buffer,0,sizeof(client_buffer));
     int msg_recv = recv(socket_fd,client_buffer, sizeof(client_buffer),0 ); //
         client_buffer[msg_recv] = 0;//the msg_recv is the numberof tuples that client receives, so it can determine the terminating point in the buffer
-        fputs(client_buffer,stdout);
+        printf("the echo message from server is :");
+        fputs(client_buffer,stdout);//put the message in the buffer to the screen
     if ((msg_recv) == -1){ //when the return value is -1, means it cannot receive message
         printf("FAIL: cannot receive the msg from the server");
-    }
+        }
     
-    //
+    //}
+    close(socket_fd);//close the socket
+    printf("receive, closed the socket");//
 
     
     
