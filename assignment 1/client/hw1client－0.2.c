@@ -49,18 +49,19 @@ int readline(int fd, char *vptr, size_t maxlen)//fd is the socket descriptor, *v
     client_buffer_read = 0;
     return number_bytes;
 }
-int writen(int fd, char *vptr, size_t n)//writen only write n (as the third argument) bytes to a socket and return the number of bytes of a (-1) on error
+int writen(int fd, char *vptr, size_t n, int t)//writen only write n (as the third argument) bytes to a socket and return the number of bytes of a (-1) on error
 {   //n-=1;
     int index = n;
+    int loop = t;
     printf("n is %d\n",index);
     char *ptr;//the pointer the the writing buffer
     ptr = vptr;
     int write_status = 0;
     int number_bytes_write = 0;
-    printf("going to write: %s\n",ptr);
-    for (int i = 0;i<n;i++){
+    //printf("going to write: %s\n",ptr);
+    for (int i = 0;i<loop;i++){
     again:
-        write_status = write(fd,ptr,n);//send one message with n bytes. The write() will return the number of bytes it sent which may not reach the n we assigned, or -1 for error, or EINTER for process inturrption. !!must not use &ptr, since ptr is already the pointer for me.
+        write_status = write(fd,ptr,1);//send one message with n bytes. The write() will return the number of bytes it sent which may not reach the n we assigned, or -1 for error, or EINTER for process inturrption. !!must not use &ptr, since ptr is already the pointer for me.
         if ((write_status) == -1){
             if ((errno) == 4){goto again;}//its not a error, but a signal interruption
             else{return -1;}//there`s error!
@@ -208,10 +209,11 @@ int main(int argc,char *argv[])		//argv[0] is file name, argv[1] is the ip addre
     printf("%s\n",sendline);
     fclose(file_read);*/
     //typing
-    printf("The Maximum lenth of line is 10, which will include 8 bytes of data + 1 byte of ")
-    fgets(sendline,10,stdin);//the actual size is data+"\n"+"\0", so the lenth of data is 8
+    while(1){
+        printf("The Maximum lenth of line is 10, which will include 8 bytes of data + 1 byte of ");
+    fgets(sendline,1024,stdin);//the actual size is data+"\n"+"\0", so the lenth of data is 8
     //writen
-	int index_w = writen(socket_fd, sendline, strlen(sendline));
+        int index_w = writen(socket_fd, sendline, strlen(sendline),10);
     printf("the return value of writen is: %d\n",index_w-1);//minus the "\n"
     if (index_w == -1){//-1 means error!
         printf("error! message sending failed because the return value of writen is -1\n");}
@@ -224,7 +226,7 @@ int main(int argc,char *argv[])		//argv[0] is file name, argv[1] is the ip addre
     else{printf("the client received %d bytes data from server\n",index_r);}//how many bytes we send back
     printf("the data from the server is: ");
 	fputs(client_buffer, stdout);
-    printf("\n");
+        printf("\n");}
 	//}
    /* while(1){
         memset(&sendline,0,sizeof(sendline));//clean the writting buffer

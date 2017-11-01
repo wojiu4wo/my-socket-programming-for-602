@@ -48,7 +48,7 @@ int main(int argc,char *argv[])//argv[0] is file name, argv[1] is the ipaddress 
     printf("ready to send msg, please type\n");
     memset(&sendline,0,sizeof(sendline));
     //send
-    //while(1){
+    while(1){
         printf("what i send to the server: ");
     fgets(sendline,MAXLINE,stdin);//get what we type in the command line, the first argument is the buffer for message reading, the second argument is the number of message, the third is the source of this message, which is the command line here.
         printf("\n");
@@ -64,7 +64,7 @@ int main(int argc,char *argv[])//argv[0] is file name, argv[1] is the ipaddress 
         printf("FAIL: cannot receive the msg from the server");
         }
     
-    //}
+    }
     close(socket_fd);//close the socket
     printf("receive, closed the socket");//
 
